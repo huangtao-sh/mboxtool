@@ -1,0 +1,65 @@
+import email
+import mailbox
+from argparse import ArgumentParser
+import sys
+from os import listdir,mkdir
+from os.path import basename,isdir,isfile,splitext,join,exists
+
+def decode(header):
+    h=email.header.decode_header(header)
+    s=[]
+    for x in h:
+        if isinstance(x[0],bytes):
+            s.append(x[0].decode(x[1] if x[1] else 'ascii'))
+        else:
+            s.append(x[0])
+    return ''.join(s)
+
+class Mailbox:
+    def execute(self):
+        if self.emails and self.mailbox:
+            if self.importemail:
+                self.import_email(self.emails,self.mailbox)
+            else:
+                self.export_email()
+    def import_email(self,email_path,mailbox_path):
+        dir_list=listdir(email_path)
+        dirs=[]
+        mailbox_file_name=join(mailbox_path,basename(email_path))
+        mb=mailbox.mbox(mailbox_file_name)
+        mb.lock()
+        for d in dir_list:
+            f=join(email_path,d)
+            if isdir(f):
+                dirs.append(d)
+            elif isfile(f) and splitext(f)[1]=='.eml':
+                with open(f) as fn:
+                    mb.add(fn)                    
+                try:
+                    print(splitext(f)[0])
+                except:
+                    pass
+        mb.unlock()
+        mb.close()
+        if dirs:
+            m_path=join(mailbox_path,basename(email_path)+'.sbd')
+            if not exists(m_path):
+                mkdir(m_path)
+            for d in dirs:
+                e_path=join(email_path,d)
+                self.import_email(e_path,m_path)
+
+    def export_email(self):
+        pass
+
+def proc_args(instance):
+    parser=ArgumentParser(description='Mailbox 导入导出')
+    parser.add_argument('-i','--importemail',action='store_true')
+    parser.add_argument('-e',dest='emails')
+    parser.add_argument('-m',dest='mailbox')
+    parser.parse_args(sys.argv[1:],namespace=instance)
+
+if __name__=='__main__':
+    e=Mailbox()
+    proc_args(e)
+    e.execute()
