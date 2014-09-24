@@ -1,3 +1,4 @@
+#!/bin/python3
 import email
 import mailbox
 from argparse import ArgumentParser
