@@ -16,6 +16,20 @@ def decode(header):
             s.append(x[0])
     return ''.join(s)
 
+def proc_file_name(file_name):
+    ignore_char='/\*"<>|?'
+    linux_len=0
+    windows_len=0
+    new_name=''
+    for char in file_name:
+        if not(char in ignore_char):
+            linux_len+=len(char.encode('utf8'))
+            windows_len+=len(char.encode('gbk'))
+            if linux_len>255-4 or windows_len>255-4:
+                break
+            new_name=new_name+char
+    return new_name
+
 class Mailbox:
     
     def execute(self):
@@ -38,7 +52,6 @@ class Mailbox:
             if isdir(f):
                 dirs.append(d)
             elif isfile(f) and splitext(f)[1]=='.eml':
-
                 with open(f) as fn:
                     mb.add(fn)                    
                 try:
@@ -68,6 +81,13 @@ def proc_args(instance):
     parser.parse_args(sys.argv[1:],namespace=instance)
 
 if __name__=='__main__':
+    '''
     e=Mailbox()
     proc_args(e)
     e.execute()
+    '''
+    a=[
+        '张三阿*"伯张三阿',
+        'asfdasdfa<>/|||/?',]
+    for x in a:
+        print(proc_file_name(x))

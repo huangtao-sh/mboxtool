@@ -7,5 +7,7 @@ setup(
         author_email='huangtao.jh@gmail.com',
         platforms='any',
         description='mbox import&export tools',
+        long_description='mbox import&export tools',
         scripts=['mboxtool.py'],
+        license='GPL',
         )
