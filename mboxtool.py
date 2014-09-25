@@ -17,16 +17,20 @@ def decode(header):
     return ''.join(s)
 
 class Mailbox:
+    
     def execute(self):
         if self.emails and self.mailbox:
             if self.importemail:
                 self.import_email(self.emails,self.mailbox)
             else:
                 self.export_email()
+                
     def import_email(self,email_path,mailbox_path):
         dir_list=listdir(email_path)
         dirs=[]
-        mailbox_file_name=join(mailbox_path,basename(email_path))
+        #将mailbox_file_name 修改为以mailbox_path为名
+        base,ext=splitext(basename(mailbox_path))
+        mailbox_file_name=join(mailbox_path,basename(mailbox_path))
         mb=mailbox.mbox(mailbox_file_name)
         mb.lock()
         for d in dir_list:
@@ -34,19 +38,22 @@ class Mailbox:
             if isdir(f):
                 dirs.append(d)
             elif isfile(f) and splitext(f)[1]=='.eml':
+
                 with open(f) as fn:
                     mb.add(fn)                    
                 try:
                     print(splitext(f)[0])
                 except:
                     pass
+
         mb.unlock()
         mb.close()
         if dirs:
-            m_path=join(mailbox_path,basename(email_path)+'.sbd')
-            if not exists(m_path):
-                mkdir(m_path)
+            #将目标文件夹的ext带到下一个文件夹
             for d in dirs:
+                m_path=join(mailbox_path,d+ext)
+                if not exists(m_path):
+                    mkdir(m_path)
                 e_path=join(email_path,d)
                 self.import_email(e_path,m_path)
 
