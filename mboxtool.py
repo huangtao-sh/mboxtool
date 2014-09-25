@@ -16,6 +16,18 @@ def decode(header):
             s.append(x[0])
     return ''.join(s)
 
+#Bug fix：修复中文名称报错问题
+def safe_print(s):
+    r=[]
+    for x in s:
+        try:
+            x.encode('gbk')
+            r.append(x)
+        except:
+            pass
+    return(''.join(r))
+        
+
 def proc_file_name(file_name):
     ignore_char='/\*"<>|?'
     linux_len=0
@@ -57,7 +69,7 @@ class Mailbox:
                 try:
                     print(splitext(f)[0])
                 except:
-                    pass
+                    print(safe_print(splitext(f)[0]))
 
         mb.unlock()
         mb.close()
