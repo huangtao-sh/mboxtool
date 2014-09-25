@@ -38,8 +38,13 @@ Foxmail 转换的效果非常不错，可以正常将PST转换为eml文件，
 使用说明
 -----
 
-在命令行执行：
+* 在命令行执行：
 
 	mboxtool -i -e path/to/eml -m path/to/mbox
 
-执行上述命令后，系统将自动进行转换
+	执行上述命令后，系统将自动进行转换
+* 常见用途：
+
+	mboxtool -i -e path/to/eml -m "path/to/thunderbird/Local Folders\存档.sbd"
+
+用于把path/to/eml目录下的邮件全部导入存档文件夹中。
